@@ -40,6 +40,10 @@ else
 fi
 
 # Add Go environment variables to .profile
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/goApps
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+
 cat << 'EOF' >> $HOME/.profile
 export GOROOT=/usr/local/go
 export GOPATH=$HOME/goApps
