@@ -127,7 +127,7 @@ if [ "$INSTALLED_STORY_VERSION" = "none" ]; then
     git clone https://github.com/piplabs/story.git
     cd story
     git checkout $STORY_TARGET_VERSION
-    $HOME/goApps/bin/go build -o story ./client
+    $(which go) build -o story ./client
     cp $HOME/story/story $HOME/goApps/bin/
     $HOME/goApps/bin/story version
 elif [ "$INSTALLED_STORY_VERSION" \< "$STORY_TARGET_VERSION" ]; then
@@ -135,7 +135,7 @@ elif [ "$INSTALLED_STORY_VERSION" \< "$STORY_TARGET_VERSION" ]; then
     cd $HOME/story
     git fetch
     git checkout $STORY_TARGET_VERSION
-    $HOME/goApps/bin/go build -o story ./client
+    $(which go) build -o story ./client
     cp $HOME/story/story $HOME/goApps/bin/
     $HOME/goApps/bin/story version
 else
