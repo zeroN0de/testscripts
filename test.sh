@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Update system and install required packages
-apt-get update && apt-get upgrade && apt-get install sudo -y
+apt-get update -y && apt-get upgrade -y && apt-get install sudo curl -y
 sudo apt-get install -y git curl make build-essential jq wget liblz4-tool aria2
 
 # Increase file handle limits
@@ -130,6 +130,7 @@ EOF
 fi
 
 # Story-geth init step (for chaindata)
+sudo systemctl daemon-reload
 sudo systemctl start geth
 sudo systemctl stop geth
 
