@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Update system and install required packages
-sudo apt-get update && sudo apt upgrade -y
-sudo apt-get install -y make build-essential jq wget liblz4-tool aria2
+apt-get update && apt-get upgrade && apt-get install sudo -y
+sudo apt-get install -y git curl make build-essential jq wget liblz4-tool aria2
 
 # Increase file handle limits
 ulimit -n 655350
