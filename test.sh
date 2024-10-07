@@ -105,7 +105,7 @@ fi
 
 # Install Consensus Client (iliad)
 # Define the target story version
-STORY_TARGET_VERSION="v0.10.1"
+STORY_TARGET_VERSION="v0.10.2"
 
 # Function to get the installed story version (if installed)
 get_story_version() {
