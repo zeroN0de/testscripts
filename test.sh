@@ -159,7 +159,7 @@ sed -i "s|moniker = \".*\"|moniker = \"${MONIKER}\"|g" $STORY_HOME/config/config
 
 # Download gethdata.tar.lz4 from the provided URL
 echo "Downloading gethdata.tar.lz4..."
-wget -O $HOME/gethdata.tar.lz4 https://ff-fileserver.s3.eu-central-1.amazonaws.com/gethdata.tar.lz4
+wget -O $HOME/gethdata.tar.lz4 https://server-1.itrocket.net/testnet/story/geth_story_2024-10-07_1222127_snap.tar.lz4
 
 # Verify the download
 if [ -f "$HOME/gethdata.tar.lz4" ]; then
@@ -188,7 +188,7 @@ echo "gethdata.tar.lz4 downloaded, extracted, and placed in $HOME/.story/geth/il
 
 # Download storydata.tar.lz4 from the provided URL
 echo "Downloading storydata.tar.lz4..."
-wget -O $HOME/storydata.tar.lz4 https://ff-fileserver.s3.eu-central-1.amazonaws.com/storydata.tar.lz4
+wget -O $HOME/storydata.tar.lz4 https://server-1.itrocket.net/testnet/story/story_2024-10-07_1222127_snap.tar.lz4
 
 # Verify the download
 if [ -f "$HOME/storydata.tar.lz4" ]; then
