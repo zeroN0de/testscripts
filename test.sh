@@ -88,7 +88,7 @@ if [ "$INSTALLED_GETH_VERSION" = "none" ]; then
     cd story-geth
     git checkout $GETH_TARGET_VERSION
     make geth
-    cp $HOME/story-geth/build/bin/geth $HOME/goApps/bin
+    cp $HOME/story-geth/build/bin/geth $HOME/goApps/bin/
     $HOME/goApps/bin/geth version
 elif [ "$INSTALLED_GETH_VERSION" \< "$GETH_TARGET_VERSION" ]; then
     echo "Installed geth version is lower than $GETH_TARGET_VERSION. Upgrading to version $GETH_TARGET_VERSION..."
@@ -128,7 +128,7 @@ if [ "$INSTALLED_STORY_VERSION" = "none" ]; then
     cd story
     git checkout $STORY_TARGET_VERSION
     $HOME/goApps/bin/go build -o story ./client
-    cp $HOME/story $HOME/goApps/bin/
+    cp $HOME/story/story $HOME/goApps/bin/
     $HOME/goApps/bin/story version
 elif [ "$INSTALLED_STORY_VERSION" \< "$STORY_TARGET_VERSION" ]; then
     echo "Installed story version is lower than $STORY_TARGET_VERSION. Upgrading to version $STORY_TARGET_VERSION..."
@@ -136,14 +136,14 @@ elif [ "$INSTALLED_STORY_VERSION" \< "$STORY_TARGET_VERSION" ]; then
     git fetch
     git checkout $STORY_TARGET_VERSION
     $HOME/goApps/bin/go build -o story ./client
-    cp $HOME/story $HOME/goApps/bin/
+    cp $HOME/story/story $HOME/goApps/bin/
     $HOME/goApps/bin/story version
 else
     echo "story version $INSTALLED_STORY_VERSION is already installed and up-to-date."
 fi
 
 # Copy story binary to goApps bin directory
-cp $HOME/story $HOME/goApps/bin/
+cp $HOME/story/story $HOME/goApps/bin/
 
 # Initialize story client and modify configuration files
 $HOME/goApps/bin/story init --network iliad
