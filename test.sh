@@ -102,6 +102,36 @@ else
     echo "geth version $INSTALLED_GETH_VERSION is already installed and up-to-date."
 fi
 
+# Check if geth.service already exists, if not, create it
+if [ -f /etc/systemd/system/geth.service ]; then
+    echo "geth.service file already exists. Skipping creation."
+else
+    echo "Creating geth.service file..."
+    cat << EOF | sudo tee /etc/systemd/system/geth.service
+[Unit]
+Description=geth daemon
+After=network-online.target
+
+[Service]
+User=ubuntu
+ExecStart=$HOME/goApps/bin/geth --iliad --syncmode full
+KillMode=process
+KillSignal=SIGINT
+TimeoutStopSec=90
+Restart=on-failure
+RestartSec=10s
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    echo "geth.service file created."
+fi
+
+# Story-geth init step (for chaindata)
+sudo systemctl start geth
+sudo systemctl stop geth
 
 # Install Consensus Client (iliad)
 # Define the target story version
@@ -216,33 +246,6 @@ rm $HOME/storydata.tar.lz4
 echo "storydata.tar.lz4 downloaded, extracted, and placed in $HOME/.story/story/data."
 
 
-
-# Check if geth.service already exists, if not, create it
-if [ -f /etc/systemd/system/geth.service ]; then
-    echo "geth.service file already exists. Skipping creation."
-else
-    echo "Creating geth.service file..."
-    cat << EOF | sudo tee /etc/systemd/system/geth.service
-[Unit]
-Description=geth daemon
-After=network-online.target
-
-[Service]
-User=ubuntu
-ExecStart=$HOME/goApps/bin/geth --iliad --syncmode full
-KillMode=process
-KillSignal=SIGINT
-TimeoutStopSec=90
-Restart=on-failure
-RestartSec=10s
-LimitNOFILE=65535
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-    echo "geth.service file created."
-fi
 
 # Check if the story.service file already exists
 if [ -f /etc/systemd/system/story.service ]; then
