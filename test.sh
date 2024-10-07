@@ -39,18 +39,18 @@ else
     echo "Go is already installed and up-to-date."
 fi
 
-# Add Go environment variables to .profile
+# Add Go environment variables to .bashrc
 export GOROOT=/usr/local/go
 export GOPATH=$HOME/goApps
 export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
-cat << 'EOF' >> $HOME/.profile
+cat << 'EOF' >> $HOME/.bashrc
 export GOROOT=/usr/local/go
 export GOPATH=$HOME/goApps
 export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 EOF
 
-source $HOME/.profile
+source $HOME/.bashrc
 
 # Disable IPv6
 sudo sed -i -e "s/IPV6=.*/IPV6=no/" /etc/default/ufw
