@@ -130,10 +130,32 @@ EOF
 fi
 
 # Story-geth init step (for chaindata)
-sudo systemctl daemon-reload
-sudo systemctl start geth
-sudo systemctl stop geth
+CHAINDATA_DIR="$HOME/.story/geth/iliad/geth/chaindata"
 
+# Starting geth, if not exist DIR Chaindata.
+if [ ! -d "$CHAINDATA_DIR" ]; then
+    echo “chaindata directory does not exist, start geth service...”
+    sudo systemctl start geth
+
+    # Check if the chaindata directory is created for up to 20 seconds
+    for i in {1..20}; do
+        if [ -d "$CHAINDATA_DIR" ]; then
+            echo “The chaindata directory has been created.”
+            break
+        fi
+        sleep 1
+    done
+
+    # Once the Chaindata directory has been created, stop the geth service
+    if [ -d "$CHAINDATA_DIR" ]; then
+        echo “Stopping the geth service...”
+        sudo systemctl stop geth
+    else
+        echo “The chaindata directory was not created in 20 seconds.”
+    fi
+else
+    echo “The chaindata directory already exists.”
+fi
 # Install Consensus Client (iliad)
 # Define the target story version
 STORY_TARGET_VERSION="v0.10.2"
