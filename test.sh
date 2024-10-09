@@ -312,6 +312,7 @@ alias istart='sudo systemctl start story'
 alias istop='sudo systemctl stop story'
 alias istatus='sudo systemctl status story'
 alias ilog='journalctl -u story -f -o cat'
+alias ist='curl localhost:26657/status | jq'
 EOF
 echo "Write a alias for geth.service and story.service"
 
