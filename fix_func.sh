@@ -48,6 +48,9 @@ install_go() {
 }
 
 # Function to set Go environment variables
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/goApps
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 setup_go_env() {
     cat << 'EOF' >> $HOME/.bashrc
 export GOROOT=/usr/local/go
