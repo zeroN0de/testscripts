@@ -1,8 +1,8 @@
 #!/bin/bash
 
 GO_VERSION="1.22.6"
-GETH_TARGET_VERSION="v0.9.3"
-STORY_TARGET_VERSION="v0.10.1"
+GETH_TARGET_VERSION=v0.9.3
+STORY_TARGET_VERSION=v0.10.1
 CHAINDATA_DIR="$HOME/.story/geth/iliad/geth/chaindata"
 STORY_HOME="$HOME/.story/story"
 MONIKER="bh-story-node"
@@ -76,8 +76,9 @@ install_geth() {
     if [ "$INSTALLED_GETH_VERSION" = "none" ] || [ "$INSTALLED_GETH_VERSION" \< "$GETH_TARGET_VERSION" ]; then
         echo "Installing or updating geth to version $GETH_TARGET_VERSION..."
         cd $HOME
-        git clone https://github.com/piplabs/story-geth.git || cd story-geth && git fetch
-        git checkout $GETH_TARGET_VERSION
+        git clone https://github.com/piplabs/story-geth.git
+        cd story-geth && git fetch --tags
+        git checkout refs/tags/$GETH_TARGET_VERSION
         make geth
         cp $HOME/story-geth/build/bin/geth $HOME/goApps/bin/
     else
