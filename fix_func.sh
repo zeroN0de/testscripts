@@ -169,8 +169,9 @@ install_story() {
     if [ "$INSTALLED_STORY_VERSION" = "none" ] || [ "$INSTALLED_STORY_VERSION" \< "$STORY_TARGET_VERSION" ]; then
         echo "Installing or updating story to version $STORY_TARGET_VERSION..."
         cd $HOME
-        git clone https://github.com/piplabs/story.git || cd story && git fetch
-        git checkout $STORY_TARGET_VERSION
+        git clone https://github.com/piplabs/story.git
+        cd story && git fetch
+        git checkout refs/tags/$STORY_TARGET_VERSION
         $(which go) build -o story ./client
         cp $HOME/story/story $HOME/goApps/bin/
         $HOME/goApps/bin/story init --network iliad
