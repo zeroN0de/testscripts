@@ -333,10 +333,14 @@ echo "1. Node installation and running the node via snapshot"
 echo "2. Update Node"
 read -p "Choice: " task_choice
 
-if [ "$task_choice" -eq 1 ]; then
-    install_node
-elif [ "$task_choice" -eq 2 ]; then
-    update_node
+if [[ "$task_choice" =~ ^[0-9]+$ ]]; then
+    if [ "$task_choice" -eq 1 ]; then
+        install_node
+    elif [ "$task_choice" -eq 2 ]; then
+        update_node
+    else
+        echo "Invalid choice."
+    fi
 else
-    echo "Invalid choice."
+    echo "Invalid input. Please enter a number."
 fi
