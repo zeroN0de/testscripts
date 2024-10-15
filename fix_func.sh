@@ -301,9 +301,13 @@ update_node() {
                 cd story
             fi
             git fetch --tags
-            git checkout refs/tags/$update_story_version
-            $(which go) build -o story ./client
-            echo "Story version $update_story_version installed successfully at ./story."
+            if git checkout refs/tags/$update_story_version; then
+                $(which go) build -o story ./client
+                echo "Story version $update_story_version installed successfully at ./story."
+            else
+                echo "Error: The version '$update_story_version' does not exist. Please try again."
+                return 1
+            fi
             ;;
         2)
             echo "Enter the new Story-geth version (e.g., v0.9.3):"
@@ -316,9 +320,13 @@ update_node() {
                 cd story-geth
             fi
             git fetch --tags
-            git checkout refs/tags/$update_geth_version
-            make geth
-            echo "Story-geth version $update_geth_version installed successfully at ./build/bin/geth."
+            if git checkout refs/tags/$update_geth_version; then
+                make geth
+                echo "Story-geth version $update_geth_version installed successfully at ./build/bin/geth."
+            else
+                echo "Error: The version '$update_geth_version' does not exist. Please try again."
+                return 1
+            fi
             ;;
         *)
             echo "Invalid choice."
@@ -326,18 +334,44 @@ update_node() {
     esac
 }
 
+check_status() {
+    # Check if jq is installed
+    if ! command -v jq &> /dev/null; then
+        echo "jq is not installed. Installing now..."
+        sudo apt-get update -y
+        sudo apt-get install -y jq
+    fi
+
+    # Check node status
+    response=$(curl -s -o /dev/null -w "%{http_code}" localhost:26657/status)
+    
+    if [ "$response" -ne 200 ]; then
+        echo "Error: Unable to connect to localhost:26657."
+        echo "Possible reasons:"
+        echo "1. The node is not running."
+        echo "2. The port 26657 is not accessible."
+        echo "3. If the node's port has been customized, please use:"
+        echo "   curl localhost:<customized_port>/status | jq"
+        echo "Please check the node status or ensure that the correct port is open."
+    else
+        curl localhost:26657/status | jq
+    fi
+}
 
 # User input for selecting task
 echo "Select the task:"
 echo "1. Node installation and running the node via snapshot"
-echo "2. Update Node"
-read -p "Choice: " task_choice
+echo "2. Updating the Story and Story-geth binaries to the desired version"
+echo "3. Check the current node status (Please run the node and select this option)"
+read -p "Enter the number of the desired action : " task_choice
 
 if [[ "$task_choice" =~ ^[0-9]+$ ]]; then
     if [ "$task_choice" -eq 1 ]; then
         install_node
     elif [ "$task_choice" -eq 2 ]; then
         update_node
+    elif [ "$task_choice" -eq 3 ]; then
+        check_status
     else
         echo "Invalid choice."
     fi
