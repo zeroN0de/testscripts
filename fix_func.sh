@@ -73,7 +73,7 @@ net.ipv6.conf.lo.disable_ipv6=1
 EOF
 }
 
-# Function to install or update geth
+# Function to install geth
 install_geth() {
     local INSTALLED_GETH_VERSION=$(get_geth_version)
     if [ "$INSTALLED_GETH_VERSION" = "none" ] || [ "$INSTALLED_GETH_VERSION" \< "$GETH_TARGET_VERSION" ]; then
@@ -88,6 +88,24 @@ install_geth() {
         echo "Geth version $INSTALLED_GETH_VERSION is up-to-date."
     fi
 }
+
+# Function to  geth
+update_geth() {
+    if [ -d "story-geth" ]; then
+        echo "Directory 'story-geth' already exists. Skipping clone..." 
+        cd story-geth
+    else
+        git clone https://github.com/piplabs/story-geth.git
+        cd story-geth
+    fi
+    read -p "Enter the version of Story-geth you want to install (e.g., v0.9.4): " update_geth_version
+    git fetch --tags
+    git checkout refs/tags/$version
+    make geth
+
+    echo "Story-geth version $version installed successfully at ./build/bin/geth."
+}
+
 
 # Function to get installed geth version
 get_geth_version() {
@@ -181,6 +199,24 @@ install_story() {
     fi
 }
 
+# Function to update story client
+update_story() {
+    if [ -d "story" ]; then
+        echo "Directory 'story' already exists. Skipping clone..." 
+        cd story
+    else
+        git clone https://github.com/piplabs/story.git
+        cd story
+    fi
+    read -p "Enter the version of Story-geth you want to install (e.g., v0.11.0): " update_story_version
+    git fetch --tags
+    git checkout refs/tags/$update_story_version
+    $(which go) build -o story ./client
+
+    echo "Story version $version installed successfully at ./story."
+}
+
+
 # Function to get installed story version
 get_story_version() {
     if [ -f "$HOME/goApps/bin/story" ]; then
@@ -209,26 +245,26 @@ download_and_extract() {
     fi
 }
 
-# Main script starts here
-os_check
-install_packages
-set_file_limits
-install_go
-setup_go_env
-disable_ipv6
-install_geth
-create_geth_service
-create_story_service
-initialize_chaindata
-install_story
+# Install logic executed on entry #1
+install_node() {
+    os_check
+    install_packages
+    set_file_limits
+    install_go
+    setup_go_env
+    disable_ipv6
+    install_geth
+    create_geth_service
+    create_story_service
+    initialize_chaindata
+    install_story
 
+    # Download and extract blockchain data
+    download_and_extract "https://snapshots2.mandragora.io/story/geth_snapshot.lz4" "$HOME/gethdata.tar.lz4" "$CHAINDATA_DIR"
+    download_and_extract "https://snapshots2.mandragora.io/story/story_snapshot.lz4" "$HOME/storydata.tar.lz4" "$STORY_HOME/data"
 
-# Download geth and story data
-download_and_extract "https://snapshots2.mandragora.io/story/geth_snapshot.lz4" "$HOME/gethdata.tar.lz4" "$CHAINDATA_DIR"
-download_and_extract "https://snapshots2.mandragora.io/story/story_snapshot.lz4" "$HOME/storydata.tar.lz4" "$STORY_HOME/data"
-
-# Add aliases for geth and story to .bashrc
-cat << EOF >> $HOME/.bashrc
+    # Add aliases to .bashrc
+    cat << EOF >> $HOME/.bashrc
 alias gstart='sudo systemctl start geth'
 alias gstop='sudo systemctl stop geth'
 alias glog='sudo journalctl -u geth -f -o cat'
@@ -238,10 +274,69 @@ alias istop='sudo systemctl stop story'
 alias ilog='sudo journalctl -u story -f -o cat'
 EOF
 
-source $HOME/.bashrc
+    source $HOME/.bashrc
 
-# Start services
-sudo systemctl start geth
-sudo systemctl start story
+    # Start services
+    sudo systemctl start geth
+    sudo systemctl start story
 
-echo "Installation and setup complete."
+    echo "Installation and setup complete."
+}
+
+update_node() {
+    echo "You have chosen to update. Select the node to update:"
+    echo "1. Story"
+    echo "2. Story-geth"
+    read -p "Choice: " choice
+
+    case $choice in
+        1)
+            echo "Enter the new Story version (e.g., v0.11.0):"
+            read -p "Version: " update_story_version
+            if [ -d "story" ]; then
+                echo "Directory 'story' already exists. Skipping clone..." 
+                cd story
+            else
+                git clone https://github.com/piplabs/story.git
+                cd story
+            fi
+            git fetch --tags
+            git checkout refs/tags/$update_story_version
+            $(which go) build -o story ./client
+            echo "Story version $update_story_version installed successfully at ./story."
+            ;;
+        2)
+            echo "Enter the new Story-geth version (e.g., v0.9.3):"
+            read -p "Version: " update_geth_version
+            if [ -d "story-geth" ]; then
+                echo "Directory 'story-geth' already exists. Skipping clone..."
+                cd story-geth
+            else
+                git clone https://github.com/piplabs/story-geth.git
+                cd story-geth
+            fi
+            git fetch --tags
+            git checkout refs/tags/$update_geth_version
+            make geth
+            echo "Story-geth version $update_geth_version installed successfully at ./build/bin/geth."
+            ;;
+        *)
+            echo "Invalid choice."
+            ;;
+    esac
+}
+
+
+# User input for selecting task
+echo "Select the task:"
+echo "1. Node installation and running the node via snapshot"
+echo "2. Update Node"
+read -p "Choice: " task_choice
+
+if [ "$task_choice" -eq 1 ]; then
+    install_node
+elif [ "$task_choice" -eq 2 ]; then
+    update_node
+else
+    echo "Invalid choice."
+fi
