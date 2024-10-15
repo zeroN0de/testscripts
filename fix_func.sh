@@ -1,8 +1,8 @@
 #!/bin/bash
 
 GO_VERSION="1.22.6"
-GETH_TARGET_VERSION=v0.9.3
-STORY_TARGET_VERSION=v0.10.1
+GETH_TARGET_VERSION=v0.9.4
+STORY_TARGET_VERSION=v0.11.0
 CHAINDATA_DIR="$HOME/.story/geth/iliad/geth/chaindata"
 STORY_HOME="$HOME/.story/story"
 MONIKER="bh-story-node"
@@ -224,15 +224,18 @@ install_story
 
 
 # Download geth and story data
-download_and_extract "https://snapshots.bharvest.dev/archive/geth_archive.tar.lz4" "$HOME/gethdata.tar.lz4" "$CHAINDATA_DIR"
-download_and_extract "https://snapshots.bharvest.dev/testnet/story/story_1311024.tar.lz4" "$HOME/storydata.tar.lz4" "$STORY_HOME/data"
+download_and_extract "https://snapshots2.mandragora.io/story/geth_snapshot.lz4" "$HOME/gethdata.tar.lz4" "$CHAINDATA_DIR"
+download_and_extract "https://snapshots2.mandragora.io/story/story_snapshot.lz4" "$HOME/storydata.tar.lz4" "$STORY_HOME/data"
 
 # Add aliases for geth and story to .bashrc
 cat << EOF >> $HOME/.bashrc
 alias gstart='sudo systemctl start geth'
 alias gstop='sudo systemctl stop geth'
+alias glog='sudo journalctl -u geth -f -o cat'
+
 alias istart='sudo systemctl start story'
 alias istop='sudo systemctl stop story'
+alias ilog='sudo journalctl -u story -f -o cat'
 EOF
 
 source $HOME/.bashrc
