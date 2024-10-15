@@ -359,22 +359,28 @@ check_status() {
 }
 
 # User input for selecting task
-echo "Select the task:"
-echo "1. Node installation and running the node via snapshot"
-echo "2. Updating the Story and Story-geth binaries to the desired version"
-echo "3. Check the current node status (Please run the node and select this option)"
-read -p "Enter the number of the desired action : " task_choice
+if [ -t 0 ]; then
+    # User input for selecting task
+    echo "Select the task:"
+    echo "1. Node installation and running the node via snapshot"
+    echo "2. Updating the Story and Story-geth binaries to the desired version"
+    echo "3. Check the current node status (Please run the node and select this option)"
+    read -p "Enter the number of the desired action : " task_choice
 
-if [[ "$task_choice" =~ ^[0-9]+$ ]]; then
-    if [ "$task_choice" -eq 1 ]; then
-        install_node
-    elif [ "$task_choice" -eq 2 ]; then
-        update_node
-    elif [ "$task_choice" -eq 3 ]; then
-        check_status
+    if [[ "$task_choice" =~ ^[0-9]+$ ]]; then
+        if [ "$task_choice" -eq 1 ]; then
+            install_node
+        elif [ "$task_choice" -eq 2 ]; then
+            update_node
+        elif [ "$task_choice" -eq 3 ]; then
+            check_status
+        else
+            echo "Invalid choice."
+        fi
     else
-        echo "Invalid choice."
+        echo "Invalid input. Please enter a number."
     fi
 else
-    echo "Invalid input. Please enter a number."
+    echo "This script requires an interactive terminal. Please run it directly in a terminal session."
+    exit 1
 fi
